@@ -1,5 +1,7 @@
 import * as THREE from 'three';
-import Road from './road/Road.js'
+import Road from './light-trails/road/Road.js';
+
+import {initDistortion} from './light-trails/distortion/distortion.js';
 
 let leftRoadWay, rightRoadWay, island;
 
@@ -8,17 +10,15 @@ export default class App {
 		// Init ThreeJS Basics
 		this.options = options;
 
-		this.options.distortion = {
-			uniforms: distortion_uniforms,
-			getDistortion: distortion_vertex
-		};
+
+		this.options.distortion = initDistortion();
 
 		this.renderer = new THREE.WebGLRenderer({
 			antialias: false
 		});
 
-		this.renderer.setSize(container.offsetWidth, container.offsetHeight, false);
 		this.renderer.setPixelRatio(window.devicePixelRatio);
+		this.renderer.setSize(container.offsetWidth, container.offsetHeight);
 		container.append(this.renderer.domElement);
 
 		this.camera = new THREE.PerspectiveCamera(
@@ -48,7 +48,6 @@ export default class App {
 		// Binds
 		this.tick = this.tick.bind(this);
 		this.init = this.init.bind(this);
-		this.setSize = this.setSize.bind(this);
 	}
 
 	init() {
@@ -59,6 +58,7 @@ export default class App {
 
 		this.tick();
 	}
+	
 	update(delta) {
 		let lerpPercentage = Math.exp(-(-60 * Math.log2(1 - 0.1)) * delta);
 
@@ -79,10 +79,6 @@ export default class App {
 
 	}
 
-	setSize(width, height, updateStyles) {
-		this.renderer.setSize(width, height, updateStyles);
-	}
-
 	tick() {
 		const delta = this.clock.getDelta();
 		this.renderer.render(this.scene, this.camera);
@@ -90,33 +86,6 @@ export default class App {
 		requestAnimationFrame(this.tick);
 	}
 }
-
-const distortion_uniforms = {
-	uDistortionX: new THREE.Uniform(new THREE.Vector2(80, 3)),
-	uDistortionY: new THREE.Uniform(new THREE.Vector2(-40, 2.5))
-};
-
-const distortion_vertex = `
-#define PI 3.14159265358979
-  uniform vec2 uDistortionX;
-  uniform vec2 uDistortionY;
-
-    float nsin(float val){
-    return sin(val) * 0.5+0.5;
-    }
-  vec3 getDistortion(float progress){
-        progress = clamp(progress, 0.,1.);
-        float xAmp = uDistortionX.r;
-        float xFreq = uDistortionX.g;
-        float yAmp = uDistortionY.r;
-        float yFreq = uDistortionY.g;
-        return vec3( 
-            xAmp * nsin(progress* PI * xFreq   - PI / 2. ) ,
-            yAmp * nsin(progress * PI *yFreq - PI / 2.  ) ,
-            0.
-        );
-    }
-`;
 
 function lerp(current, target, speed = 0.1, limit = 0.001) {
 	let change = (target - current) * speed;

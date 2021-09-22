@@ -6,7 +6,7 @@ module.exports = {
  	mode: 'development',
 
   	entry: {
-		index: './src/index.js',
+		index: './index.js',
 		//print: './src/print.js',
  	},
  	output: {
@@ -17,7 +17,7 @@ module.exports = {
 
  	plugins: [
 		new HtmlWebpackPlugin({
-		  template: './src/index.html',
+		  template: './index.html',
 		  inject: true,
 		  chunks: ['index'],
 		  filename: 'index.html'

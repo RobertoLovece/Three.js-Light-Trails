@@ -1,12 +1,6 @@
-import App from './app.js';
-
-require('normalize.css/normalize.css');
-require("./index.css");
-
-window.onload = function () {
-    const container = document.getElementById('app');
-
-    const roadOptions = {
+export function initRoadConfig() {
+    
+    let roadConfig = {
 
         length: 400,
         roadWidth: 9,
@@ -29,6 +23,5 @@ window.onload = function () {
         }
     };
 
-    const myApp = new App(container, roadOptions);
-    myApp.init();
+    return roadConfig;
 }
