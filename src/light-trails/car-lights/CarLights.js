@@ -2,8 +2,8 @@ import * as THREE from 'three';
 
 //
 
-import carLightsVert from './shader/CarLightsVert.glsl'
-import carLightsFrag from './shader/CarLightsFrag.glsl'
+import carLightsVert from './shader/CarLightsVert.glsl';
+import carLightsFrag from './shader/CarLightsFrag.glsl';
 
 //
 
@@ -122,13 +122,13 @@ export default class CarLights extends THREE.Mesh {
 
 		this.frustumCulled = false;
 
-	}
+	};
 
     //
 
 	update(time) {
 		this.material.uniforms.uTime.value = time;
-	}
+	};
 
     //
 
@@ -137,9 +137,13 @@ export default class CarLights extends THREE.Mesh {
         return Math.random() * base;
     };
 
+    //
+
     pickRandom(arr) {
         if (Array.isArray(arr)) return arr[Math.floor(Math.random() * arr.length)];
         return arr;
     };
 
-}
+    //
+
+};

@@ -1,8 +1,11 @@
 import * as THREE from 'three';
 
+//
+
 import * as CONFIG from './config.js';
 import Road from './road/Road.js';
 import CarLights from './car-lights/CarLights.js';
+import LightSticks from './light-sticks/Light-Sticks.js';
 
 //
 
@@ -12,6 +15,8 @@ let renderer, camera, scene;
 // objects
 let leftRoadWay, rightRoadWay, island; // road
 let leftCarLights, rightCarLights; // car lights
+let leftSticks; // light sticks
+
 
 // animation
 let clock;
@@ -103,7 +108,14 @@ function initObjects() {
 
 
     // left sticks 
+    var lightSticksConfig = CONFIG.initLightSticksConfig();
 
+    leftSticks = new LightSticks(lightSticksConfig);
+    leftSticks.position.setX(
+        -(roadConfig.roadWidth + roadConfig.islandWidth / 2)
+    );
+
+    scene.add(leftSticks);
 
 };
 
@@ -145,6 +157,10 @@ function update(delta) {
 
     leftCarLights.update(time);
     rightCarLights.update(time);
+
+    //
+
+    leftSticks.update(time);
 
 }
 

@@ -14,7 +14,7 @@ export function initSceneConfig() {
 
     return sceneConfig;
 
-}
+};
 
 //
 
@@ -44,7 +44,7 @@ export function initRoadConfig() {
     };
 
     return roadConfig;
-}
+};
 
 //
 
@@ -85,4 +85,26 @@ export function initCarLightsConfig() {
     }
 
     return carLightsConfig;
-}
+};
+
+export function initLightSticksConfig() {
+
+    var lightSticksConfig = {
+
+        distortion: distortion,
+
+        length: 400,
+        
+        totalSideLightSticks: 50,
+        lightStickWidth: [0.12, 0.5],
+		lightStickHeight: [1.3, 1.7],
+
+        colors: {
+            sticks: 0xdadafa,
+        },
+
+    };
+
+    return lightSticksConfig;
+
+};
