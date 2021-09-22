@@ -1,15 +1,22 @@
 import * as THREE from 'three';
-import { initRoadConfig, initSceneConfig } from './config.js';
+
+import * as CONFIG from './config.js';
 import Road from './road/Road.js';
+import CarLights from './car-lights/CarLights.js';
+
+//
 
 // scene related
 let renderer, camera, scene;
 
 // objects
-let leftRoadWay, rightRoadWay, island;
+let leftRoadWay, rightRoadWay, island; // road
+let leftCarLights, rightCarLights; // car lights
 
 // animation
 let clock;
+
+//
 
 export function init() {
 
@@ -18,9 +25,11 @@ export function init() {
 
 };
 
+//
+
 function initScene() {
 
-    var sceneConfig = initSceneConfig();
+    var sceneConfig = CONFIG.initSceneConfig();
 
     renderer = new THREE.WebGLRenderer({
         antialias: false
@@ -50,17 +59,55 @@ function initScene() {
 
 }
 
+//
+
 function initObjects() {
 
-    var roadConfig = initRoadConfig();
+    // road setup
+    var roadConfig = CONFIG.initRoadConfig();
 
     leftRoadWay = new Road(-1, true, roadConfig);
     rightRoadWay = new Road(1, true, roadConfig);
     island = new Road(0, false, roadConfig);
 
-    scene.add(leftRoadWay, rightRoadWay, island)
+    scene.add(leftRoadWay, rightRoadWay, island);
+
+
+    // car lights setup
+    var carLightsConfig = CONFIG.initCarLightsConfig();
+
+    leftCarLights = new CarLights(
+        carLightsConfig,
+        carLightsConfig.colors.leftCars,
+        carLightsConfig.movingAwaySpeed,
+        new THREE.Vector2(0, 1 - carLightsConfig.carLightsFade)
+    );
+
+    leftCarLights.position.setX(
+        -roadConfig.roadWidth / 2 - roadConfig.islandWidth / 2
+    );
+    
+    //
+
+    rightCarLights = new CarLights(
+        carLightsConfig,
+        carLightsConfig.colors.rightCars,
+        carLightsConfig.movingCloserSpeed,
+        new THREE.Vector2(1, 0 + carLightsConfig.carLightsFade)
+    );
+    rightCarLights.position.setX(
+        roadConfig.roadWidth / 2 + roadConfig.islandWidth / 2
+    );
+
+    scene.add(leftCarLights, rightCarLights);
+
+
+    // left sticks 
+
 
 };
+
+//
 
 export function animate() {
 
@@ -73,6 +120,8 @@ export function animate() {
     renderer.render(scene, camera);
 
 }
+
+//
 
 function update(delta) {
 
@@ -92,7 +141,14 @@ function update(delta) {
     rightRoadWay.update(time);
     island.update(time);
 
+    //
+
+    leftCarLights.update(time);
+    rightCarLights.update(time);
+
 }
+
+//
 
 function lerp(current, target, speed = 0.1, limit = 0.001) {
     let change = (target - current) * speed;

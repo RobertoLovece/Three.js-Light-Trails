@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 
-import roadVert from './shader/roadVert.glsl'
-import roadFrag from './shader/roadFrag.glsl'
-import islandFrag from './shader/islandFrag.glsl'
+import roadVert from './shader/RoadVert.glsl'
+import roadFrag from './shader/RoadFrag.glsl'
+import islandFrag from './shader/IslandFrag.glsl'
+
+//
 
 export default class Road extends THREE.Mesh{
 	// Side  = 0 center, = 1 right = -1 left
@@ -76,6 +78,8 @@ export default class Road extends THREE.Mesh{
 			(options.islandWidth / 2 + options.roadWidth / 2) * side;
 	
 	}
+
+	//
 
 	update(time) {
 		this.uTime.value = time;
