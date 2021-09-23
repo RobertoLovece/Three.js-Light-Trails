@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import Stats from 'three/examples/jsm/libs/stats.module.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 
 //
 
@@ -9,7 +12,7 @@ import LightSticks from './light-sticks/Light-Sticks.js';
 
 //
 
-// scene related
+// scene related (these variables should be in index) 
 let renderer, camera, scene;
 
 // objects
@@ -18,14 +21,15 @@ let leftCarLights, rightCarLights; // car lights
 let leftSticks; // light sticks
 
 
-// animation
-let clock;
+// general (these variables should be in index) 
+let clock, stats;
 
 //
 
 export function init() {
 
     initScene();
+    initGeneral();
     initObjects();
 
 };
@@ -40,7 +44,7 @@ function initScene() {
         antialias: false
     });
 
-    var container = document.getElementById('app');
+    var container = document.getElementById('canvas');
 
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(container.offsetWidth, container.offsetHeight);
@@ -59,8 +63,6 @@ function initScene() {
     camera.position.x = 0;
     camera.position.y = 8;
     camera.position.z = -5;
-
-    clock = new THREE.Clock(); 
 
 }
 
@@ -121,6 +123,17 @@ function initObjects() {
 
 //
 
+function initGeneral() {
+
+    clock = new THREE.Clock(); 
+
+    stats = new Stats();
+    document.body.appendChild(stats.dom);
+
+}
+
+//
+
 export function animate() {
 
     requestAnimationFrame(animate);
@@ -128,6 +141,7 @@ export function animate() {
     let delta = clock.getDelta();
     
     update(delta);
+    stats.update();
 
     renderer.render(scene, camera);
 
@@ -174,3 +188,19 @@ function lerp(current, target, speed = 0.1, limit = 0.001) {
     return change;
 }
 
+//
+
+function onWindowResize() {
+    var container = document.getElementById('canvas');
+
+    var width = container.offsetWidth;
+    var height = container.offsetHeight;
+
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+
+    renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.setSize(width, height);
+}
+
+window.addEventListener('resize', onWindowResize, false);
