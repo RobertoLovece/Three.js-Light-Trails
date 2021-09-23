@@ -1,4 +1,4 @@
-import * as LIGHT from './src/light-trails/LightTrails.js';
+import * as LIGHT from './src/light-trails/main.js';
 
 //
 
