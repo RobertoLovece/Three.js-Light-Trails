@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { BloomPass } from 'three/examples/jsm/postprocessing/BloomPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass.js';
 
 //
 
@@ -13,7 +16,7 @@ import LightSticks from './light-sticks/Light-Sticks.js';
 //
 
 // scene related (these variables should be in index) 
-let renderer, camera, scene;
+let renderer, camera, scene, composer;
 
 // objects
 let leftRoadWay, rightRoadWay, island; // road
@@ -30,6 +33,7 @@ export function init() {
 
     initScene();
     initGeneral();
+    initPostProcessing();
     initObjects();
 
 };
@@ -64,6 +68,45 @@ function initScene() {
     camera.position.y = 8;
     camera.position.z = -5;
 
+    var roadConfig = CONFIG.initRoadConfig();
+
+    let fog = new THREE.Fog(
+        0x000000,
+        roadConfig.length * 0.2,
+        roadConfig.length * 500,
+    );
+      
+    scene.fog = fog;
+
+}
+
+//
+
+function initPostProcessing() {
+
+    var exposure = 1;
+    renderer.toneMappingExposure = Math.pow(exposure, 4.0);
+
+    composer = new EffectComposer(renderer);
+
+    var renderPass = new RenderPass(scene, camera);
+
+    // resolution, strength, radius, threshold
+    var bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+	bloomPass.strength = 0.8;
+    bloomPass.threshold = 0.1;
+	bloomPass.radius = 1;
+
+    var smaaPass = new SMAAPass( window.innerWidth * renderer.getPixelRatio(), window.innerHeight * renderer.getPixelRatio() );
+
+    renderPass.renderToScreen = false;
+    bloomPass.renderToScreen = false;
+    smaaPass.renderToScreen = true;
+
+    composer.addPass(renderPass);
+    composer.addPass(bloomPass);
+    composer.addPass(smaaPass);
+
 }
 
 //
@@ -93,7 +136,7 @@ function initObjects() {
     leftCarLights.position.setX(
         -roadConfig.roadWidth / 2 - roadConfig.islandWidth / 2
     );
-    
+
     //
 
     rightCarLights = new CarLights(
@@ -125,7 +168,7 @@ function initObjects() {
 
 function initGeneral() {
 
-    clock = new THREE.Clock(); 
+    clock = new THREE.Clock();
 
     stats = new Stats();
     document.body.appendChild(stats.dom);
@@ -139,11 +182,12 @@ export function animate() {
     requestAnimationFrame(animate);
 
     let delta = clock.getDelta();
-    
+
     update(delta);
     stats.update();
 
-    renderer.render(scene, camera);
+    // renderer.render();
+    composer.render();
 
 }
 
@@ -199,8 +243,10 @@ function onWindowResize() {
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
 
-    renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(width, height);
+    composer.setPixelRatio(window.devicePixelRatio);
+    composer.setSize(width, height);
 }
 
 window.addEventListener('resize', onWindowResize, false);
