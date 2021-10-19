@@ -108,3 +108,9 @@ export function initLightSticksConfig() {
     return lightSticksConfig;
 
 };
+
+export const BLOOMPARAMS = {
+    bloomStrength: 0.8,
+    bloomThreshold: 0.1,
+    bloomRadius: 1.0,
+}

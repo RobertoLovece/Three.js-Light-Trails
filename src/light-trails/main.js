@@ -2,13 +2,13 @@ import * as THREE from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { BloomPass } from 'three/examples/jsm/postprocessing/BloomPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass.js';
 
 //
 
 import * as CONFIG from './config.js';
+import {initGUI} from './GUI.js';
 import Road from './road/Road.js';
 import CarLights from './car-lights/CarLights.js';
 import LightSticks from './light-sticks/Light-Sticks.js';
@@ -16,7 +16,7 @@ import LightSticks from './light-sticks/Light-Sticks.js';
 //
 
 // scene related (these variables should be in index) 
-let renderer, camera, scene, composer;
+let renderer, camera, scene, composer, bloomPass;
 
 // objects
 let leftRoadWay, rightRoadWay, island; // road
@@ -35,6 +35,7 @@ export function init() {
     initGeneral();
     initPostProcessing();
     initObjects();
+    initGUI(bloomPass);
 
 };
 
@@ -92,10 +93,11 @@ function initPostProcessing() {
     var renderPass = new RenderPass(scene, camera);
 
     // resolution, strength, radius, threshold
-    var bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
-	bloomPass.strength = 0.8;
-    bloomPass.threshold = 0.1;
-	bloomPass.radius = 1;
+    bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+	
+    bloomPass.strength = CONFIG.BLOOMPARAMS.bloomStrength;
+    bloomPass.threshold = CONFIG.BLOOMPARAMS.bloomThreshold;
+	bloomPass.radius = CONFIG.BLOOMPARAMS.bloomRadius;
 
     var smaaPass = new SMAAPass( window.innerWidth * renderer.getPixelRatio(), window.innerHeight * renderer.getPixelRatio() );
 
